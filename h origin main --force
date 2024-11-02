@@ -1,0 +1,107 @@
+[33mcommit 544b7839102d049362a4bf5e477789b37357aa13[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: suraj patel <surajpatelsuraj55@gmail.com>
+Date:   Sat Oct 26 15:01:50 2024 +0530
+
+    fixing yml file
+
+[33mcommit ba236d639a88e6adc46455f842039948d1c48573[m
+Author: suraj patel <surajpatelsuraj55@gmail.com>
+Date:   Sat Oct 26 14:53:20 2024 +0530
+
+    added requirements.txt
+
+[33mcommit 433655347e7a219f2a1906a542470acbebba6c66[m
+Author: suraj patel <surajpatelsuraj55@gmail.com>
+Date:   Sat Oct 26 07:22:53 2024 +0530
+
+    testing github action file working or not? try 6
+
+[33mcommit b018c46d1c81af43dc65afeb368a136f9c9c9f13[m
+Author: suraj patel <surajpatelsuraj55@gmail.com>
+Date:   Sat Oct 26 07:12:41 2024 +0530
+
+    testing github action file working or not? try 5
+
+[33mcommit f50be7124713e07c60f5c9b9d71ef9b0002b8696[m
+Author: suraj patel <surajpatelsuraj55@gmail.com>
+Date:   Sat Oct 26 07:09:12 2024 +0530
+
+    testing github action file working or not? try 4
+
+[33mcommit ae9d8141cdba30560c1bea5886c3c41c9300d41a[m
+Author: Suraj Patel <140960022+suraj7974@users.noreply.github.com>
+Date:   Sat Oct 26 07:03:39 2024 +0530
+
+    Update README.md
+
+[33mcommit c27483fa5555e1e7ceb4254ed5424383547819b7[m
+Author: suraj patel <surajpatelsuraj55@gmail.com>
+Date:   Sat Oct 26 06:39:43 2024 +0530
+
+    testing github action file working or not? try 3
+
+[33mcommit d5dd07200dd0df5481d06d945c57248ce4523a8e[m
+Author: suraj patel <surajpatelsuraj55@gmail.com>
+Date:   Sat Oct 26 06:34:25 2024 +0530
+
+    testing github action file working or not? try 2
+
+[33mcommit d1c645de36fc9d8dded6f4aa25b52a375dfc5b2d[m
+Author: suraj patel <surajpatelsuraj55@gmail.com>
+Date:   Sat Oct 26 05:54:57 2024 +0530
+
+    testing github action file working or not?
+
+[33mcommit 39f3b322addad9c4a44705cdfbe7dfa9013fd0c6[m
+Author: suraj patel <surajpatelsuraj55@gmail.com>
+Date:   Sat Oct 26 05:22:31 2024 +0530
+
+    Add GitHub Actions workflow for scheduled tasks
+
+[33mcommit 017eafa98abcd192bd45f44020f60ab4f81c2dbb[m
+Author: suraj patel <surajpatelsuraj55@gmail.com>
+Date:   Sat Oct 26 04:22:08 2024 +0530
+
+    deleted unwanted files
+
+[33mcommit f8ce4e807aa82fc47e6d350c750f7e0f6ca96176[m
+Author: suraj patel <surajpatelsuraj55@gmail.com>
+Date:   Sat Oct 26 04:19:47 2024 +0530
+
+    created venv
+
+[33mcommit 61a6c5898b16b61eed19f0c18948279588924675[m
+Author: suraj patel <surajpatelsuraj55@gmail.com>
+Date:   Sat Oct 26 04:18:54 2024 +0530
+
+    structured the main folder
+
+[33mcommit b0cf6ce32dde409d20e63cf71c9798fdefc5542e[m
+Author: suraj patel <surajpatelsuraj55@gmail.com>
+Date:   Wed Oct 23 19:56:57 2024 +0530
+
+    updated readme
+
+[33mcommit 19553e43d88d29d31273c779e668c6eba63e7fed[m
+Author: suraj patel <surajpatelsuraj55@gmail.com>
+Date:   Wed Oct 23 19:48:49 2024 +0530
+
+    automated media posting in twitter
+
+[33mcommit b9aa6988a575d7542ac2b33bd75b4e938a90f4cd[m
+Author: suraj patel <surajpatelsuraj55@gmail.com>
+Date:   Tue Oct 22 21:59:31 2024 +0530
+
+    added requirements
+
+[33mcommit df31a8a46b189c37b1259755a0b1604c2e8fd5ac[m
+Author: suraj patel <surajpatelsuraj55@gmail.com>
+Date:   Tue Oct 22 21:55:47 2024 +0530
+
+    meme generation using groq
+
+[33mcommit cd288982abbe4977616f516baa910df7dc2e00ec[m
+Author: suraj patel <surajpatelsuraj55@gmail.com>
+Date:   Tue Oct 22 21:54:13 2024 +0530
+
+    first commit
