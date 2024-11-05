@@ -6,6 +6,7 @@ import random
 
 load_dotenv()
 
+
 class TweetGenerator:
     def __init__(self):
         try:
@@ -68,13 +69,13 @@ class TweetGenerator:
             print("Generating tweet content via Groq API...")
             chat_completion = self.groq_client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
-                model="mixtral-8x7b-32768",
+                model="llama-3.1-70b-versatile",
                 temperature=0.7,
                 max_tokens=200,
             )
             response = chat_completion.choices[0].message.content.strip()
             print("Tweet content generated successfully.")
-            
+
             tweet_parts = response.split('\n')
             tweet_text = tweet_parts[0].replace('TWEET:', '').strip()
             hashtags = tweet_parts[1].replace('HASHTAGS:', '').strip()

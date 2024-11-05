@@ -21,7 +21,7 @@ class MemeGenerator:
             self.groq_client = Groq(api_key=api_key)
 
             self.output_dir = "memes"
-            self.font_path = "fonts/DejaVuSans-Bold.ttf"  # Local font path
+            self.font_path = "fonts/DejaVuSans-Bold.ttf"
 
             if not os.path.exists(self.font_path):
                 raise FileNotFoundError(
@@ -62,7 +62,7 @@ class MemeGenerator:
             """
             chat_completion = self.groq_client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
-                model="mixtral-8x7b-32768",
+                model="llama-3.1-70b-versatile",
                 temperature=0.7,
                 max_tokens=100,
             )

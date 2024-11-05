@@ -9,20 +9,26 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 class HashtagGenerator:
     def __init__(self):
         try:
             print("Initializing HashtagGenerator...")
             api_key = os.getenv("GROQ_API_KEY")
             if not api_key:
-                raise ValueError("GROQ_API_KEY environment variable not found.")
+                raise ValueError(
+                    "GROQ_API_KEY environment variable not found.")
             self.groq_client = Groq(api_key=api_key)
             print("HashtagGenerator initialized successfully.")
         except Exception as e:
             print(f"Error initializing HashtagGenerator: {str(e)}")
 
     def generate_hashtags(self, topic, theme="career"):
+        if isinstance(topic, dict):
+            topic = topic.get('topic', '')
+
         print(f"Generating hashtags for topic: {topic} with theme: {theme}")
+
         prompt = f"""
         Generate 4-5 relevant hashtags for a social media post about '{topic}' related to {theme}.
         The hashtags should be:
@@ -34,29 +40,50 @@ class HashtagGenerator:
         Format the response as a single line of hashtags separated by spaces.
         Example format: #Career #JobTips #TechJobs
         """
-        
+
         try:
-            chat_completion = self.groq_client.chat.completions.create(
+            print("DEBUG: Sending request to Groq API...")
+            response = self.groq_client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
-                model="mixtral-8x7b-32768",
+                model="llama-3.1-70b-versatile",
                 temperature=0.6,
                 max_tokens=100,
             )
-            hashtags = chat_completion.choices[0].message.content.strip()
-            formatted_hashtags = ' '.join(['#' + tag.lstrip('#') for tag in hashtags.split()])
-            print(f"Generated hashtags: {formatted_hashtags}")
-            return formatted_hashtags
+
+            print(
+                f"DEBUG: Raw response content: {response.choices[0].message.content}")
+
+            try:
+                content = response.choices[0].message.content
+                if isinstance(content, str):
+                    hashtags = content.strip()
+                    formatted_hashtags = ' '.join(
+                        ['#' + tag.lstrip('#') for tag in hashtags.split()])
+                    print(f"Generated hashtags: {formatted_hashtags}")
+                    return formatted_hashtags
+                else:
+                    print(
+                        f"DEBUG: Content is not a string. Type: {type(content)}")
+                    return "#JobSearch #CareerTips #ResumeBuilder"
+            except AttributeError as e:
+                print(f"DEBUG: Error accessing message content: {e}")
+                return "#JobSearch #CareerTips #ResumeBuilder"
+
         except Exception as e:
-            print(f"Error generating hashtags: {str(e)}")
-            return "#JobSearch #CareerTips #ResumeBuilder"  # Fallback hashtags
+            print(f"DEBUG: Exception in generate_hashtags: {str(e)}")
+            print(f"DEBUG: Exception type: {type(e)}")
+            return "#JobSearch #CareerTips #ResumeBuilder"
 
 
 def generate_all_memes(meme_gen, hashtag_gen, trending_topics, company_theme):
     """Generate memes for all topics and return their paths with generated hashtags."""
     meme_data = []
-    for topic in trending_topics[:len(trending_topics)]:
+    for topic_dict in trending_topics[:len(trending_topics)]:
         try:
-            print(f"Generating meme for topic: {topic}")
+            print(f"Generating meme for topic: {topic_dict}")
+            topic = topic_dict['topic'] if isinstance(
+                topic_dict, dict) else topic_dict
+
             meme_path = meme_gen.create_meme(topic, company_theme)
 
             if not meme_path:
@@ -69,9 +96,10 @@ def generate_all_memes(meme_gen, hashtag_gen, trending_topics, company_theme):
                 'path': meme_path,
                 'hashtags': hashtags
             })
-            print(f"Meme generated and saved at: {meme_path} with hashtags: {hashtags}")
+            print(
+                f"Meme generated and saved at: {meme_path} with hashtags: {hashtags}")
         except Exception as e:
-            print(f"Error generating meme for topic '{topic}': {str(e)}")
+            print(f"Error generating meme for topic '{topic_dict}': {str(e)}")
     return meme_data
 
 
@@ -122,6 +150,8 @@ def main():
             with open('trending_topics.json', 'r') as f:
                 trending_topics = json.load(f)
                 print("Loaded trending topics from file.")
+            trending_topics = random.sample(trending_topics, 10)
+            print("random topics loaded from trending_topics.json file")
         except FileNotFoundError:
             print("trending_topics.json not found. Using sample topics...")
             trending_topics = [
@@ -132,7 +162,8 @@ def main():
                 "Tech Skills"
             ]
 
-        meme_data = generate_all_memes(meme_gen, hashtag_gen, trending_topics, company_theme)
+        meme_data = generate_all_memes(
+            meme_gen, hashtag_gen, trending_topics, company_theme)
 
         if not meme_data:
             print("No memes were generated successfully. Exiting...")
