@@ -2,8 +2,8 @@ name: Job Scraper Workflow
 
 on:
   schedule:
-    - cron: "0 */6 * * *" # Runs every 6 hours
-  workflow_dispatch: # Allows manual trigger
+    - cron: "0 */1 * * *"
+  workflow_dispatch:
 
 jobs:
   scrape-and-post:
@@ -36,3 +36,11 @@ jobs:
         run: |
           google-chrome --version
           chromedriver --version
+
+      - name: Scrape job posts
+        run: |
+          python linkedin_scraper.py
+
+      - name: Post jobs to twitter
+        run: |
+          python job_post.py
