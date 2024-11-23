@@ -44,37 +44,38 @@ def setup_driver():
         
         if 'GITHUB_ACTIONS' in os.environ:
             service = Service('/usr/local/bin/chromedriver')
-            print("chrome initialized")
         else:
             service = Service()  # Let it auto-detect locally
-            print("chrome initialized")
             
         driver = webdriver.Chrome(service=service, options=chrome_options)
         
         # Set window size
         driver.set_window_size(1920, 1080)
-        print("chrome opened")
         
         return driver
 
 def login_to_linkedin(driver):
     try:
         driver.get("https://www.linkedin.com/login")
+        print("on the login page...")
 
         username_elem = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "username"))
         )
         username_elem.send_keys(linkedin_gmail)
+        print("username")
 
         password_elem = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "password"))
         )
         password_elem.send_keys(linkedin_password)
+        print("password")
 
         submit_button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//button[@type='submit']"))
         )
         submit_button.click()
+        print("button pressed")
 
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "global-nav-search"))
