@@ -2,43 +2,31 @@ name: LinkedIn Job Scraper and Twitter Poster
 
 on:
   schedule:
-    - cron: "0 */6 * * *" # Runs every 6 hours
+    - cron: "0 */1 * * *" # Runs every 1 hours
   workflow_dispatch: # Allows manual trigger
 
 jobs:
-  scrape-and-post:
+  setup-chromedriver:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
-
-      - name: Install Chrome
+      - name: Install Google Chrome
         run: |
-          sudo apt-get update
-          sudo wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg
-          sudo echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
 
-      - name: Install dependencies
+      - name: Download ChromeDriver
         run: |
-          python -m pip install --upgrade pip
-          pip install selenium==4.15.2 
-          pip install tweepy python-dotenv 
-          pip install webdriver-manager==4.0.1
+          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+          CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
+          curl -O "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
+          unzip chromedriver_linux64.zip
+          sudo mv chromedriver /usr/local/bin/
+          rm chromedriver_linux64.zip
 
-      - name: Run LinkedIn scraper
-        run: python linkedin_scraper.py
-        env:
-          PYTHONUNBUFFERED: 1
-          WDM_LOG_LEVEL: "0"
-
-      - name: Run Twitter poster
-        run: python twitter_poster.py
-        env:
-          PYTHONUNBUFFERED: 1
+      - name: Verify ChromeDriver
+        run: |
+          chromedriver --version
