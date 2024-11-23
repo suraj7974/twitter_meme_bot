@@ -44,8 +44,10 @@ def setup_driver():
         
         if 'GITHUB_ACTIONS' in os.environ:
             service = Service('/usr/local/bin/chromedriver')
+            print("chrome initialized")
         else:
             service = Service()  # Let it auto-detect locally
+            print("chrome initialized")
             
         driver = webdriver.Chrome(service=service, options=chrome_options)
         
