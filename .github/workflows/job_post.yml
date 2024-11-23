@@ -1,32 +1,38 @@
-name: LinkedIn Job Scraper and Twitter Poster
+name: Job Scraper Workflow
 
 on:
   schedule:
-    - cron: "0 */1 * * *" # Runs every 1 hours
+    - cron: "0 */6 * * *" # Runs every 6 hours
   workflow_dispatch: # Allows manual trigger
 
 jobs:
-  setup-chromedriver:
+  scrape-and-post:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install Google Chrome
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install Chrome
         run: |
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
 
-      - name: Download ChromeDriver
-        run: |
-          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
-          CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-          curl -O "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
-          unzip chromedriver_linux64.zip
-          sudo mv chromedriver /usr/local/bin/
-          rm chromedriver_linux64.zip
+      - name: Install ChromeDriver
+        uses: nanasess/setup-chromedriver@v2
 
-      - name: Verify ChromeDriver
+      - name: Install Python dependencies
         run: |
+          python -m pip install --upgrade pip
+          pip install selenium webdriver_manager tweepy python-dotenv
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Display Chrome and ChromeDriver versions
+        run: |
+          google-chrome --version
           chromedriver --version
