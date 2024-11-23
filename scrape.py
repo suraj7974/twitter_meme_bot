@@ -6,6 +6,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.action_chains import ActionChains
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.core.utils import ChromeType
 import time
 import os
 import json
@@ -22,14 +24,26 @@ if not linkedin_gmail or not linkedin_password:
 
 def setup_driver():
     options = Options()
-    options.headless = False
-    options.add_experimental_option("detach", True)
     options.add_argument("--no-sandbox")
+    options.add_argument("--headless")  # Run in headless mode
     options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--start-maximized")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument("--disable-extensions")
+    options.add_argument("--disable-infobars")
+    options.add_argument('--disable-blink-features=AutomationControlled')
+    options.add_argument('--ignore-certificate-errors')
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
 
-    service = Service("/usr/bin/chromedriver")
-    return webdriver.Chrome(service=service, options=options)
+    # Install and setup ChromeDriver with specific version for stability
+    service = Service(ChromeDriverManager(chrome_type=ChromeType.GOOGLE).install())
+    driver = webdriver.Chrome(service=service, options=options)
+    
+    # Add this to help avoid detection
+    driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+    
+    return driver
 
 def login_to_linkedin(driver):
     try:

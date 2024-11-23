@@ -71,7 +71,7 @@ class TwitterJobPoster:
 
         return jobs_posted
 
-def post_linkedin_jobs_to_twitter(json_file='linkedin_jobs.json', max_jobs=1):
+def post_linkedin_jobs_to_twitter(json_file='linkedin_jobs.json', max_jobs=5):
     """
     Post LinkedIn jobs from JSON file to Twitter
     
