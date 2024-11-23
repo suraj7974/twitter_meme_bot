@@ -21,7 +21,7 @@ jobs:
       - name: Install Chrome
         run: |
           sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
+          sudo apt-get install -y xvfb google-chrome-stable
 
       - name: Install ChromeDriver
         uses: nanasess/setup-chromedriver@v2

@@ -20,32 +20,39 @@ linkedin_password = os.getenv('LINKEDIN_PASSWORD')
 if not linkedin_gmail or not linkedin_password:
     raise ValueError("LinkedIn credentials not found in environment variables")
 
-def setup_driver():
-    """Setup Chrome driver with appropriate options for GitHub Actions"""
-    chrome_options = Options()
-    
-    # Required arguments for running in GitHub Actions
-    chrome_options.add_argument('--headless')
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--disable-dev-shm-usage')
-    chrome_options.add_argument('--disable-gpu')
-    
-    # Additional recommended arguments
-    chrome_options.add_argument('--window-size=1280,1024')
-    chrome_options.add_argument('--disable-extensions')
-    chrome_options.add_argument('--proxy-server="direct://"')
-    chrome_options.add_argument('--proxy-bypass-list=*')
-    chrome_options.add_argument('--start-maximized')
-    chrome_options.add_argument('--disable-blink-features=AutomationControlled')
-    
-    # Set user agent
-    chrome_options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
-    
-    # Create a new ChromeDriver instance
-    service = Service('/usr/local/bin/chromedriver')
-    driver = webdriver.Chrome(service=service, options=chrome_options)
-    
-    return driver
+def setup_driver(self):
+        """Setup Chrome driver with appropriate options"""
+        chrome_options = Options()
+        
+        # Add arguments for running in GitHub Actions
+        if 'GITHUB_ACTIONS' in os.environ:
+            chrome_options.add_argument('--headless')
+            chrome_options.add_argument('--no-sandbox')
+            chrome_options.add_argument('--disable-dev-shm-usage')
+            chrome_options.add_argument('--disable-gpu')
+        
+        # Additional options for better stability
+        chrome_options.add_argument('--window-size=1920,1080')
+        chrome_options.add_argument('--disable-extensions')
+        chrome_options.add_argument('--disable-blink-features=AutomationControlled')
+        chrome_options.add_argument('--lang=en-US')
+        chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
+        chrome_options.add_experimental_option('useAutomationExtension', False)
+        
+        # Set user agent
+        chrome_options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+        
+        if 'GITHUB_ACTIONS' in os.environ:
+            service = Service('/usr/local/bin/chromedriver')
+        else:
+            service = Service()  # Let it auto-detect locally
+            
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+        
+        # Set window size
+        driver.set_window_size(1920, 1080)
+        
+        return driver
 
 def login_to_linkedin(driver):
     try:
