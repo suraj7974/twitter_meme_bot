@@ -17,16 +17,6 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Install Chrome
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install selenium tweepy python-dotenv webdriver_manager
-
       - name: Run LinkedIn scraper
         run: python scrape.py
         env:
