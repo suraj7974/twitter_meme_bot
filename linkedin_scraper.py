@@ -76,6 +76,10 @@ def login_to_linkedin(driver):
         )
         submit_button.click()
         print("button pressed")
+        
+        driver.save_screenshot("screenshot.png")
+        print(driver.page_source)
+
 
         WebDriverWait(driver, 20).until(
             EC.visibility_of_element_located((By.ID, "global-nav-search"))
