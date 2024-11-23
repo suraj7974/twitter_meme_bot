@@ -17,6 +17,11 @@ jobs:
         with:
           python-version: "3.x"
 
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
       - name: Run LinkedIn scraper
         run: python scrape.py
         env:
