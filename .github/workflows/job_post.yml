@@ -24,10 +24,6 @@ jobs:
 
       - name: Run LinkedIn scraper
         run: python scrape.py
-        env:
-          PYTHONUNBUFFERED: 1
 
       - name: Run Twitter poster
         run: python job_post.py
-        env:
-          PYTHONUNBUFFERED: 1
