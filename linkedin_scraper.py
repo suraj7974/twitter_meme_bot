@@ -20,7 +20,7 @@ linkedin_password = os.getenv('LINKEDIN_PASSWORD')
 if not linkedin_gmail or not linkedin_password:
     raise ValueError("LinkedIn credentials not found in environment variables")
 
-def setup_driver(self):
+def setup_driver():
         """Setup Chrome driver with appropriate options"""
         chrome_options = Options()
         
