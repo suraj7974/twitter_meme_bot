@@ -3,8 +3,6 @@ import tweepy
 from dotenv import load_dotenv
 import time
 import json
-from datetime import datetime
-import random
 
 load_dotenv()
 
@@ -12,78 +10,30 @@ class TwitterJobPoster:
     def __init__(self):
         """Initialize the Twitter Job Poster"""
         self.twitter_client = self._setup_twitter_client()
-        self.posted_jobs_file = 'posted_jobs_history.json'
-        self.posted_jobs = self._load_posted_jobs()
-        self.job_intros = [
-            "🚨 Hot Remote Job Alert! 🌐",
-            "💼 New Remote Opportunity! 🌍",
-            "🎯 Just Posted: Remote Position 🚀",
-            "📣 Remote Job Opening! ✨",
-            "🌟 Fresh Remote Job Alert! 💻",
-            "🔥 Latest Remote Opportunity! 🌎",
-            "⚡️ New Remote Role Alert! 💪",
-            "✨ Remote Position Available! 🎯",
-        ]
 
     def _setup_twitter_client(self):
         """Initialize Twitter API client"""
         try:
             client = tweepy.Client(
-                bearer_token=os.environ.get('TWITTER_BEARER_TOKEN'),
-                consumer_key=os.environ.get('TWITTER_API_KEY'),
-                consumer_secret=os.environ.get('TWITTER_API_SECRET_KEY'),
-                access_token=os.environ.get('TWITTER_ACCESS_TOKEN'),
-                access_token_secret=os.environ.get('TWITTER_ACCESS_TOKEN_SECRET')
+                bearer_token=os.getenv('TWITTER_BEARER_TOKEN'),
+                consumer_key=os.getenv('TWITTER_API_KEY'),
+                consumer_secret=os.getenv('TWITTER_API_SECRET_KEY'),
+                access_token=os.getenv('TWITTER_ACCESS_TOKEN'),
+                access_token_secret=os.getenv('TWITTER_ACCESS_TOKEN_SECRET')
             )
             return client
         except Exception as e:
             print(f"Twitter client setup error: {e}")
             return None
 
-    def _load_posted_jobs(self):
-        """Load history of posted jobs"""
-        try:
-            if os.path.exists(self.posted_jobs_file):
-                with open(self.posted_jobs_file, 'r', encoding='utf-8') as f:
-                    return json.load(f)
-            return {"posted_job_links": [], "last_update": None}
-        except Exception as e:
-            print(f"Error loading posted jobs history: {e}")
-            return {"posted_job_links": [], "last_update": None}
-
-    def _save_posted_jobs(self):
-        """Save posted jobs history"""
-        try:
-            with open(self.posted_jobs_file, 'w', encoding='utf-8') as f:
-                self.posted_jobs["last_update"] = datetime.now().isoformat()
-                json.dump(self.posted_jobs, f, indent=2)
-        except Exception as e:
-            print(f"Error saving posted jobs history: {e}")
-
     def _format_job_tweet(self, job):
-        """Format job details into a tweet with unique elements"""
+        """Format job details into a tweet"""
         try:
-            # Get current timestamp
-            timestamp = datetime.now().strftime("%I:%M %p")
-            
-            # Get random intro
-            intro = random.choice(self.job_intros)
-            
-            # Get random hashtags (mix and match from a pool)
-            hashtag_pool = [
-                "#RemoteWork", "#RemoteJob", "#JobAlert", "#JobSearch",
-                "#WorkFromHome", "#WFH", "#RemoteWorking", "#JobOpening",
-                "#Hiring", "#CareerOpportunity", "#JobHunt", "#RemoteLife"
-            ]
-            selected_hashtags = random.sample(hashtag_pool, 3)
-            hashtag_string = " ".join(selected_hashtags)
-
             tweet = (
-                f"{intro}\n\n"
-                f"🎯 {job['title']}\n\n"
-                f"🔗 Apply now: {job['link']}\n\n"
-                f"{hashtag_string}\n"
-                f"Posted at {timestamp} ET"
+                f"🚨 New Remote Job Alert! 🌐\n\n"
+                f"Position: {job['title']}\n"
+                f"\n🔗 Apply here: {job['link']}\n\n"
+                f"#RemoteJob #JobAlert #RemoteWork"
             )
             return tweet if len(tweet) <= 280 else tweet[:277] + "..."
         except KeyError as e:
@@ -93,53 +43,41 @@ class TwitterJobPoster:
             print(f"Error formatting tweet: {e}")
             return None
 
-    def is_job_posted(self, job_link):
-        """Check if a job has already been posted"""
-        return job_link in self.posted_jobs["posted_job_links"]
-
-    def mark_job_as_posted(self, job_link):
-        """Mark a job as posted"""
-        if job_link not in self.posted_jobs["posted_job_links"]:
-            self.posted_jobs["posted_job_links"].append(job_link)
-            self._save_posted_jobs()
-
-    def get_next_unposted_job(self, jobs):
-        """Get the next unposted job"""
-        for job in jobs:
-            if not self.is_job_posted(job['link']):
-                return job
-        return None
-
-    def post_single_job(self, jobs):
+    def post_jobs_to_twitter(self, jobs, max_jobs=5):
         """
-        Post a single unposted job to Twitter
-        Returns True if successful, False otherwise
+        Post jobs to Twitter
+        Returns the number of successfully posted jobs
         """
         if not self.twitter_client:
             print("Twitter client not initialized")
-            return False
+            return 0
 
-        next_job = self.get_next_unposted_job(jobs)
+        jobs_posted = 0
         
-        if not next_job:
-            print("No new jobs to post")
-            return False
+        for job in jobs[:max_jobs]:
+            tweet_text = self._format_job_tweet(job)
+            if tweet_text:
+                try:
+                    response = self.twitter_client.create_tweet(text=tweet_text)
+                    print(f"Successfully posted job: {job['title']}")
+                    jobs_posted += 1
+                    
+                    # Wait between tweets to avoid rate limits
+                    if jobs_posted < max_jobs:
+                        time.sleep(60)  
+                except Exception as e:
+                    print(f"Failed to post job: {e}")
+                    continue
 
-        tweet_text = self._format_job_tweet(next_job)
-        if tweet_text:
-            try:
-                response = self.twitter_client.create_tweet(text=tweet_text)
-                print(f"Successfully posted job: {next_job['title']}")
-                self.mark_job_as_posted(next_job['link'])
-                return True
-            except Exception as e:
-                print(f"Failed to post job: {e}")
-                return False
-        return False
+        return jobs_posted
 
-def post_linkedin_job_to_twitter(json_file='linkedin_jobs.json'):
+def post_linkedin_jobs_to_twitter(json_file='linkedin_jobs.json', max_jobs=1):
     """
-    Post a single LinkedIn job from JSON file to Twitter
+    Post LinkedIn jobs from JSON file to Twitter
+    
+    Args:
+        json_file (str): Path to JSON file containing LinkedIn jobs
+        max_jobs (int): Maximum number of jobs to post
     """
     try:
         # Load jobs from JSON file
@@ -149,35 +87,50 @@ def post_linkedin_job_to_twitter(json_file='linkedin_jobs.json'):
 
         if not jobs:
             print("No jobs found in JSON file")
-            return False
+            return
 
         # Initialize Twitter poster
         job_poster = TwitterJobPoster()
         if not job_poster.twitter_client:
             print("Failed to initialize Twitter client. Check your credentials.")
-            return False
+            return
 
         # Filter valid jobs (must have title and link)
         valid_jobs = [job for job in jobs if job.get('title') and job.get('link')]
         if not valid_jobs:
             print("No valid jobs to post")
-            return False
+            return
 
-        # Post single job
-        success = job_poster.post_single_job(valid_jobs)
-        return success
+        # Post jobs
+        print(f"Attempting to post {min(len(valid_jobs), max_jobs)} jobs to Twitter...")
+        jobs_posted = job_poster.post_jobs_to_twitter(valid_jobs, max_jobs)
+        print(f"Successfully posted {jobs_posted} jobs to Twitter")
 
     except FileNotFoundError:
         print(f"JSON file not found: {json_file}")
-        return False
     except json.JSONDecodeError:
         print("Error decoding JSON file")
-        return False
     except Exception as e:
         print(f"Error posting to Twitter: {str(e)}")
+
+def test_twitter_connection():
+    """Test Twitter API connection and credentials"""
+    try:
+        job_poster = TwitterJobPoster()
+        if job_poster.twitter_client:
+            test_tweet = "🧪 Test tweet - Checking Twitter API connection for job posting bot"
+            response = job_poster.twitter_client.create_tweet(text=test_tweet)
+            print("Twitter connection test successful!")
+            return True
+        else:
+            print("Failed to initialize Twitter client")
+            return False
+    except Exception as e:
+        print(f"Twitter connection test failed: {str(e)}")
         return False
 
 if __name__ == "__main__":
-    success = post_linkedin_job_to_twitter()
-    # For GitHub Actions, exit with appropriate status code
-    exit(0 if success else 1)
+    # First test the connection
+    if test_twitter_connection():
+        # If connection is successful, post jobs
+        post_linkedin_jobs_to_twitter()
