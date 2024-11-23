@@ -80,6 +80,7 @@ def login_to_linkedin(driver):
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "global-nav-search"))
         )
+        print("inside")
         return True
 
     except TimeoutException:
