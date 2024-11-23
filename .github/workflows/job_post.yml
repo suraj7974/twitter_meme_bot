@@ -2,7 +2,7 @@ name: LinkedIn Job Scraper and Twitter Poster
 
 on:
   schedule:
-    - cron: "0 */1 * * *" # Runs every 1 hours
+    - cron: "0 */6 * * *" # Runs every 6 hours
   workflow_dispatch: # Allows manual trigger
 
 jobs:
@@ -17,20 +17,10 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Set up Chrome
-        uses: browser-actions/setup-chrome@latest
-        with:
-          chrome-version: stable
-
-      - name: Install ChromeDriver
+      - name: Install Chrome
         run: |
-          CHROME_VERSION=$(google-chrome --version | cut -d ' ' -f 3 | cut -d '.' -f 1)
-          wget -q "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}"
-          CHROMEDRIVER_VERSION=$(cat "LATEST_RELEASE_${CHROME_VERSION}")
-          wget -q "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
-          unzip chromedriver_linux64.zip
-          sudo mv chromedriver /usr/bin/
-          sudo chmod +x /usr/bin/chromedriver
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
 
       - name: Install dependencies
         run: |
@@ -38,7 +28,11 @@ jobs:
           pip install selenium tweepy python-dotenv webdriver_manager
 
       - name: Run LinkedIn scraper
-        run: python linkedin_scraper.py
+        run: python scrape.py
+        env:
+          PYTHONUNBUFFERED: 1
 
       - name: Run Twitter poster
-        run: python twitter_poster.py
+        run: python job_post.py
+        env:
+          PYTHONUNBUFFERED: 1
