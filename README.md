@@ -1,53 +1,69 @@
-## Set Up
+## Install requirements
 
 ```bash
-python setup_scheduler.py
+pip install -r requirements.txt
 ```
 
-## Activate virtual env
+## Set Up env (in .env file)
 
-For Linux or MacOs
+GROQ_API_KEY=""
+
+TWITTER_API_KEY=
+
+TWITTER_API_SECRET_KEY=
+
+TWITTER_ACCESS_TOKEN=
+
+TWITTER_BEARER_TOKEN=
+
+LINKEDIN_EMAIL=""
+
+LINKEDIN_PASSWORD=""
+
+## Install chrome & chrome driver (Both must of same version)
 
 ```bash
-source myenv/bin/activate
+https://getwebdriver.com/chromedriver
 ```
 
-For Windows
+### Add path of your chrome driver in chromedriver_setup.py
 
 ```bash
-myenv\Scripts\activate
+service = Service("/usr/bin/chromedriver")
 ```
 
-## Set Up Groq API
+## Scraping and posting jobs
 
-Go to: https://console.groq.com/keys <br>
-and create a api key and paste it in the .env file
-
-## Set Up Twitter API
-
-Go to: https://developer.x.com/en/portal/dashboard <br>  
-Login using your Twitter account and then create a App then click on the key icon to generate keys. <br>
-
-Make sure to create <br>
-<b>API_KEY, API_SECRET_KEY, ACCESS_TOKEN, ACCESS_TOKEN_SECRET, TWITTER_BEARER_TOKEN <br></b>
-then paste all keys in .env file
-
-## set trendy topics on trending_topics.json
-
-Manually set the topics you want to use for meme in .json file
-
-## To start
-
-for posting the text post on twitter
+for scraping jobs from linkedin
 
 ```bash
-python only_post.py
+python scrape_linkedinjobs.py
+```
+
+for posting jobs to twitter
+
+```bash
+python job_post.py
+```
+
+## Meme
+
+for scraping trending tech news
+
+```bash
+python scrape_trending_news.py
 ```
 
 for posting meme on twitter
 
 ```bash
-python main.py
+python meme_post.py
 ```
 
-# almighty-check
+## Text post
+
+for posting text post on twitter
+
+```bash
+python text_post.py
+```

@@ -1,30 +1,17 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options  
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import json
 from datetime import datetime
 import time
-
+from chromedriver_setup import setup_driver
 
 class TechNewsScraper:
     def __init__(self):
         print("[DEBUG] Initializing the TechNewsScraper")
-        self.driver = self._setup_driver()
+        self.driver = setup_driver() 
         print("[DEBUG] WebDriver setup completed")
-
-    def _setup_driver(self):
-        options = Options()
-        options.headless = False
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36")
-        service = Service("/usr/bin/chromedriver")
-        print("[DEBUG] Setting up Chrome WebDriver with specified options")
-        return webdriver.Chrome(service=service, options=options)
-
+    
     def scrape_tech_news(self):
         print("[DEBUG] Starting tech news scraping")
         news_sources = [
