@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import time
 import json
 from datetime import datetime
+from collections import defaultdict
 
 load_dotenv()
 
@@ -83,7 +84,7 @@ class TwitterJobPoster:
 
     def post_jobs_to_twitter(self, jobs, max_jobs=5):
         """
-        Post jobs to Twitter in a thread
+        Post jobs to Twitter in a thread with jobs from different companies
         Returns the number of successfully posted jobs
         """
         if not self.twitter_client:
@@ -97,11 +98,41 @@ class TwitterJobPoster:
             print("No new jobs to post - all jobs have been posted already")
             return 0
 
-        print(f"Found {len(new_jobs)} new jobs to post")
+        # Group jobs by company
+        company_jobs = defaultdict(list)
+        for job in new_jobs:
+            company_jobs[job['company']].append(job)
+
+        # Flatten the grouped jobs, ensuring we pick from different companies
+        filtered_jobs = []
+        companies_used = set()
+        for company, company_job_list in company_jobs.items():
+            if len(filtered_jobs) >= max_jobs:
+                break
+            
+            # Add one job from this company if we haven't used it yet
+            if company not in companies_used:
+                filtered_jobs.append(company_job_list[0])
+                companies_used.add(company)
+
+        # If we don't have enough jobs, add more from different companies
+        for company, company_job_list in company_jobs.items():
+            if len(filtered_jobs) >= max_jobs:
+                break
+            
+            # If we have more than one job from this company and we need more jobs
+            if len(company_job_list) > 1 and company in companies_used:
+                filtered_jobs.append(company_job_list[1])
+
+        if not filtered_jobs:
+            print("No new jobs to post - unable to find diverse jobs")
+            return 0
+
+        print(f"Found {len(filtered_jobs)} new jobs to post from different companies")
 
         try:
             # Create the main tweet
-            main_tweet_text = f"🚨 New Remote Job Postings! 🌐\n\nThread Below 👇"
+            main_tweet_text = f"🚨 New Job Postings! 🌐\n\nThread Below 👇"
             main_response = self.twitter_client.create_tweet(text=main_tweet_text)
             main_tweet_id = main_response.data["id"]
             
@@ -109,7 +140,7 @@ class TwitterJobPoster:
             parent_tweet_id = main_tweet_id
             jobs_posted = 0
 
-            for i, job in enumerate(new_jobs[:max_jobs], 1):
+            for i, job in enumerate(filtered_jobs, 1):
                 tweet_text = self._format_job_tweet(job, i)
                 
                 if tweet_text:
@@ -127,7 +158,7 @@ class TwitterJobPoster:
                         parent_tweet_id = reply_response.data["id"]
                         
                         jobs_posted += 1
-                        print(f"Successfully posted job: {job['title']}")
+                        print(f"Successfully posted job: {job['title']} from {job['company']}")
                         
                         # Wait between tweets to avoid rate limits
                         time.sleep(30)

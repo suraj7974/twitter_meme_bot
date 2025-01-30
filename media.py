@@ -3,6 +3,8 @@ import tweepy
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
 class TwitterPoster:
     def __init__(self):
         try:
@@ -23,7 +25,8 @@ class TwitterPoster:
 
             if not all([self.api_key, self.api_secret_key, self.access_token,
                         self.access_token_secret, self.bearer_token]):
-                raise ValueError("Missing required Twitter API credentials in .env file")
+                raise ValueError(
+                    "Missing required Twitter API credentials in .env file")
 
             self.client = tweepy.Client(
                 bearer_token=self.bearer_token,
@@ -49,14 +52,16 @@ class TwitterPoster:
 
     def post_tweet(self, image_path, tweet_text):
         try:
-            print(f"Preparing to post tweet with image at {image_path} and text: '{tweet_text}'")
+            print(
+                f"Preparing to post tweet with image at {image_path} and text: '{tweet_text}'")
 
             if not os.path.exists(image_path):
                 raise FileNotFoundError(f"Image file not found: {image_path}")
 
             print("Uploading media...")
             media = self.api.media_upload(image_path)
-            print(f"Media uploaded successfully. Media ID: {media.media_id_string}")
+            print(
+                f"Media uploaded successfully. Media ID: {media.media_id_string}")
 
             print("Posting tweet with media...")
             response = self.client.create_tweet(
@@ -82,7 +87,6 @@ class TwitterPoster:
             print(f"Unexpected error posting to Twitter: {str(e)}")
             return False
 
+
 if __name__ == "__main__":
     poster = TwitterPoster()
-
-    poster.post_tweet("path/to/image.jpg", "Here's my latest update!")

@@ -1,0 +1,13 @@
+__pycache__/
+
+logs/
+
+memes/
+
+.env
+
+company_ids.json
+linkedin_jobs.json
+posted_jobs.json
+trending_tech.json
+
